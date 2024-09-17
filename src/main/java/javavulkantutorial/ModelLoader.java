@@ -20,26 +20,24 @@ public class ModelLoader {
 
     public static Model loadModel(File file, int flags) {
 
-        try(AIScene scene = aiImportFile(file.getAbsolutePath(), flags)) {
+        AIScene scene = aiImportFile(file.getAbsolutePath(), flags);
+        Logger logger = Logger.getLogger(ModelLoader.class.getSimpleName());
 
-            Logger logger = Logger.getLogger(ModelLoader.class.getSimpleName());
+        logger.info("Loading model " + file.getPath() + "...");
 
-            logger.info("Loading model " + file.getPath() + "...");
-
-            if(scene == null || scene.mRootNode() == null) {
-                throw new RuntimeException("Could not load model: " + aiGetErrorString());
-            }
-
-            Model model = new Model();
-
-            long startTime = System.nanoTime();
-
-            processNode(scene.mRootNode(), scene, model);
-
-            logger.info("Model loaded in " + ((System.nanoTime() - startTime) / 1e6) + "ms");
-
-            return model;
+        if(scene == null || scene.mRootNode() == null) {
+            throw new RuntimeException("Could not load model: " + aiGetErrorString());
         }
+
+        Model model = new Model();
+
+        long startTime = System.nanoTime();
+
+        processNode(scene.mRootNode(), scene, model);
+        
+        logger.info("Model loaded in " + ((System.nanoTime() - startTime) / 1e6) + "ms");
+
+        return model;
     }
 
     private static void processNode(AINode node, AIScene scene, Model model) {
